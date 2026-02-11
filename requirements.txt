@@ -1,0 +1,9 @@
+# Python依赖
+pyyaml>=6.0
+requests>=2.31.0
+lxml>=4.9.0
+
+# 可选依赖（用于PDF处理）
+pdfminer.six>=20221105
+# pdftotext (需要安装 poppler)
+# brew install poppler

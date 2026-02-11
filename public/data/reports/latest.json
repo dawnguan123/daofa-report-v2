@@ -1,0 +1,52 @@
+{
+  "date": "2026-02-11",
+  "newsCount": 5,
+  "news": [
+    {
+      "rank": 1,
+      "title": "全国教育大会在北京召开",
+      "source": "新华社",
+      "time": "2026-02-11 10:00",
+      "summary": "会议强调全面推进教育现代化，建设教育强国。",
+      "matchedChapters": [
+        {
+          "anchor_id": "ch4_p58",
+          "title": "第四章 教育与个人发展",
+          "page_range": "58-62",
+          "page_start": 58,
+          "content_summary": "教育是民族振兴的基石，是国之大计、党之大计..."
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "title": "《中华人民共和国民法典》新司法解释发布",
+      "source": "人民日报",
+      "time": "2026-02-11 09:30",
+      "summary": "最高人民法院发布关于民事案件审理的最新司法解释。",
+      "matchedChapters": [
+        {
+          "anchor_id": "ch9_p210",
+          "title": "第九章 全面推进依法治国",
+          "page_range": "210-215",
+          "page_start": 210,
+          "content_summary": "依法治国是党领导人民治理国家的基本方略..."
+        }
+      ]
+    }
+  ],
+  "chapters": [
+    {
+      "anchor_id": "ch4_p58",
+      "title": "第四章 教育与个人发展",
+      "page_range": "58-62",
+      "page_start": 58
+    },
+    {
+      "anchor_id": "ch9_p210",
+      "title": "第九章 全面推进依法治国",
+      "page_range": "210-215",
+      "page_start": 210
+    }
+  ]
+}

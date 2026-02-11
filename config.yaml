@@ -1,0 +1,32 @@
+# 道法时事报告系统配置
+
+# Minimax API (OpenAI兼容接口)
+minimax:
+  api_key: "sk-cp-QgFKvN7TycJIlAxQGaHIMihzqvSw_c4R1fd9qrtlWZBwUKbA9lu9g2ZT9Ldv9bW76kP3tBR_HIm_ENldJTJL04pQaSGH48VtFtDlaAYaOzHUTK1jTttpgdU"
+  embedding_model: "text-embedding-005"
+  base_url: "https://api.minimax.chat/v1/text/embedding"
+
+# Turso 数据库配置
+turso:
+  knowledge_db: "turso/textbook.db"
+  reports_db: "turso/reports.db"
+
+# 文件路径配置
+paths:
+  textbook_pdf: "/Users/guanliming/dailynews/道法课本"
+  output_dir: "/Users/guanliming/dailynews/output"
+  templates: "/Users/guanliming/dailynews/templates"
+
+# 新闻源配置
+news:
+  sources:
+    - "时政"
+    - "教育"
+    - "社会民生"
+    - "法律"
+  top_n: 5
+
+# 前端配置
+frontend:
+  pdf_url: "/pdf/"
+  calendar_days: 9
