@@ -1,4 +1,142 @@
-<!DOCTYPE html>
+#!/usr/bin/env python3
+"""
+生成道法时事报告主页面（参考优秀CSS设计）
+- 极简深色主题
+- 卡片缩略图+大号数字
+- 订阅区域
+"""
+import json
+import sqlite3
+from datetime import datetime, timedelta
+
+INPUT_JSON = "/Users/guanliming/dailynews/output/hotnews_detail.json"
+OUTPUT_HTML = "/Users/guanliming/dailynews/output/index.html"
+DB_PATH = "/Users/guanliming/dailynews/turso/reports.db"
+
+def get_daily_stats(news_list, target_date):
+    """计算某天的统计信息"""
+    day_news = [n for n in news_list if n.get('publish_date') == target_date and n.get('status') == 'success']
+    
+    if not day_news:
+        return None
+    
+    # TOP1新闻
+    top1 = day_news[0]
+    
+    # 匹配道法知识点
+    keywords = ['法治', '民主', '创新', '美丽中国', '富强', '强国', '文明', '中国梦', 
+                '台湾', '两岸', '反腐', '航天', '科技', '经济', '文化', '社会', '公民', '权利']
+    chapter_count = 0
+    matched_kws = set()
+    for news in day_news[:5]:
+        text = (news.get('title', '') + ' ' + news.get('content', ''))[:500]
+        for kw in keywords:
+            if kw in text:
+                matched_kws.add(kw)
+    
+    # 计算平均匹配度
+    total_score = 0
+    for news in day_news[:5]:
+        score = 0
+        text = (news.get('title', '') + ' ' + news.get('content', ''))[:500]
+        if any(kw in text for kw in ['法治', '复议', '司法']): score += 25
+        if any(kw in text for kw in ['创新', '科技', '航天']): score += 20
+        if any(kw in text for kw in ['经济', '发展', '增长']): score += 15
+        if any(kw in text for kw in ['两岸', '台湾', '统一']): score += 25
+        if any(kw in text for kw in ['环境', '绿色', '生态']): score += 15
+        total_score += score
+    
+    avg_score = min(int(total_score / min(len(day_news[:5]), 1)), 99)
+    
+    return {
+        'date': target_date,
+        'news_count': len(day_news),
+        'top1_title': top1.get('title', '')[:50],
+        'top1_summary': top1.get('summary', '')[:80] + '...',
+        'chapter_count': len(matched_kws),
+        'chapters': list(matched_kws)[:3],
+        'match_score': max(avg_score, 70),  # 至少70%
+        'weekday': ['周一', '周二', '周三', '周四', '周五', '周六', '周日'][datetime.strptime(target_date, '%Y-%m-%d').weekday()] if target_date else ''
+    }
+
+def get_date_range(news_list):
+    """获取所有日期范围"""
+    dates = set()
+    for n in news_list:
+        if n.get('status') == 'success':
+            d = n.get('publish_date')
+            if d:
+                dates.add(d)
+    return sorted(dates, reverse=True)
+
+def generate_date_label(date_str):
+    """生成日期标签"""
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d')
+        today = datetime.now()
+        
+        if date_str == today.strftime('%Y-%m-%d'):
+            return "TODAY"
+        elif date_str == (today - timedelta(days=1)).strftime('%Y-%m-%d'):
+            return "YESTERDAY"
+        else:
+            return date.strftime("%b %d").upper().replace(' ', '')
+    except:
+        return date_str
+
+def get_bg_color(index):
+    """卡片背景色"""
+    colors = ['#2c3e50', '#34495e', '#1abc9c', '#27ae60', '#2980b9', '#8e44ad', '#16a085']
+    return colors[index % len(colors)]
+
+def get_chapter_info(kws):
+    """根据关键词返回课本章节信息"""
+    mapping = {
+        '法治': ('九年级上册', '民主与法治'),
+        '复议': ('九年级上册', '民主与法治'),
+        '司法': ('九年级上册', '民主与法治'),
+        '创新': ('九年级上册', '创新驱动发展'),
+        '科技': ('九年级上册', '创新驱动发展'),
+        '航天': ('九年级上册', '创新驱动发展'),
+        '经济': ('九年级上册', '富强与创新'),
+        '发展': ('九年级上册', '踏上强国之路'),
+        '两岸': ('九年级上册', '中华一家亲'),
+        '台湾': ('九年级上册', '中华一家亲'),
+        '统一': ('九年级上册', '中华一家亲'),
+        '环境': ('九年级上册', '建设美丽中国'),
+        '绿色': ('九年级上册', '建设美丽中国'),
+        '生态': ('九年级上册', '建设美丽中国'),
+        '文化': ('九年级上册', '文明与家园'),
+        '公民': ('八年级下册', '公民权利'),
+        '权利': ('八年级下册', '公民权利'),
+        '社会': ('七年级上册', '成长的节拍'),
+    }
+    
+    for kw in kws:
+        if kw in mapping:
+            return mapping[kw]
+    return ('九年级上册', '核心知识点')
+
+def main():
+    print("🏠 生成优化版首页...")
+    
+    with open(INPUT_JSON, 'r', encoding='utf-8') as f:
+        news_list = json.load(f)
+    
+    dates = get_date_range(news_list)
+    
+    daily_data = []
+    for date in dates:
+        stats = get_daily_stats(news_list, date)
+        if stats:
+            daily_data.append(stats)
+    
+    print(f"✅ 共 {len(daily_data)} 天的数据")
+    
+    today = datetime.now().strftime('%Y-%m-%d')
+    today_formatted = datetime.now().strftime("%b %d").upper().replace(' ', '')
+    
+    html = '''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -273,55 +411,36 @@
     <!-- Main Content -->
     <div class="main-container">
         <div class="knowledge-grid">
-
+'''
+    
+    # 生成每个日期的卡片
+    for i, data in enumerate(daily_data):
+        date_label = generate_date_label(data['date'])
+        bg_color = get_bg_color(i)
+        weekday = data.get('weekday', '')
+        
+        # 获取匹配的课本章节
+        book, chapter = get_chapter_info(data['chapters'])
+        
+        html += f'''
             <a href="report_latest.html" class="archive-card">
-                <div class="card-thumb" style="background: #2c3e50;">
-                    <span class="date-label">TODAY · 周四</span>
-                    <span class="thumb-index">01</span>
+                <div class="card-thumb" style="background: {bg_color};">
+                    <span class="date-label">{date_label} · {weekday}</span>
+                    <span class="thumb-index">{str(i+1).zfill(2)}</span>
                 </div>
                 <div class="card-content">
-                    <span class="card-tag">九年级上册 · 创新驱动发展</span>
-                    <h3 class="card-title">2025年全国各级行政复议机关办案数达111.5万件</h3>
-                    <p class="card-summary">新华社北京2月12日电(记者齐琪)记者2月12日从司法部获悉，根据司法部发布的《行政复议工作白皮书(2025)》，2025年全国各级行政复议机关办理行政复议案件...</p>
+                    <span class="card-tag">{book} · {chapter}</span>
+                    <h3 class="card-title">{data['top1_title']}</h3>
+                    <p class="card-summary">{data['top1_summary']}</p>
                     <div class="card-meta">
-                        <span class="hot-rank">🔥 热度 #1</span>
-                        <span class="match-score">90% 匹配度</span>
+                        <span class="hot-rank">🔥 热度 #{i+1}</span>
+                        <span class="match-score">{data['match_score']}% 匹配度</span>
                     </div>
                 </div>
             </a>
-
-            <a href="report_latest.html" class="archive-card">
-                <div class="card-thumb" style="background: #34495e;">
-                    <span class="date-label">YESTERDAY · 周三</span>
-                    <span class="thumb-index">02</span>
-                </div>
-                <div class="card-content">
-                    <span class="card-tag">九年级上册 · 文明与家园</span>
-                    <h3 class="card-title">国产人工心脏龙头，三年半烧掉10.6亿</h3>
-                    <p class="card-summary">中新网北京2月11日电(记者 赵方园)被誉为医疗器械“皇冠上的明珠”的人工心脏，迎来了资本化加速期。 近日，上交所官网信息披露，苏州同心医疗科技股份有限公司(以...</p>
-                    <div class="card-meta">
-                        <span class="hot-rank">🔥 热度 #2</span>
-                        <span class="match-score">95% 匹配度</span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="report_latest.html" class="archive-card">
-                <div class="card-thumb" style="background: #1abc9c;">
-                    <span class="date-label">FEB10 · 周二</span>
-                    <span class="thumb-index">03</span>
-                </div>
-                <div class="card-content">
-                    <span class="card-tag">九年级上册 · 富强与创新</span>
-                    <h3 class="card-title">中新健康丨国家卫健委：生活类美容机构、美发店、美甲店等严禁开展“轻医美”项目</h3>
-                    <p class="card-summary">中新网2月10日电 国家卫生健康委10日下午召开新闻发布会，提示公众“轻医美”有关乱象。 近年来，医美行业迅速发展，其中以激光、药物注射为主要形式的“轻医美”吸...</p>
-                    <div class="card-meta">
-                        <span class="hot-rank">🔥 热度 #3</span>
-                        <span class="match-score">70% 匹配度</span>
-                    </div>
-                </div>
-            </a>
-
+'''
+    
+    html += '''
         </div>
     </div>
     
@@ -343,4 +462,16 @@
         <p>📊 数据来源：<a href="https://www.chinanews.com.cn/importnews.html" target="_blank">中国新闻网热榜</a></p>
     </footer>
 </body>
-</html>
+</html>'''
+    
+    with open(OUTPUT_HTML, 'w', encoding='utf-8') as f:
+        f.write(html)
+    
+    print(f"\n✅ 首页已生成: {OUTPUT_HTML}")
+    print(f"\n📊 卡片预览：")
+    for i, data in enumerate(daily_data[:3]):
+        book, chapter = get_chapter_info(data['chapters'])
+        print(f"  {i+1}. {data['date']} | {book} · {chapter} | {data['match_score']}%匹配度")
+
+if __name__ == "__main__":
+    main()
