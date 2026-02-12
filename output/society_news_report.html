@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-color);
+            color: var(--primary-color);
+            padding: 20px;
+        }
+
+        /* 新闻卡片 */
+        .card {
+            background: white;
+            border-radius: 12px;
+            shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* 内容区域 */
+        .content-box {
+            padding: 20px;
+        }
+
+        .news-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .summary-section {
+            background: #ebf5fb;
+            border-left: 5px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+
+        /* 课本关联列表 */
+        .relation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .relation-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .relation-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--success-color);
+        }
+
+        /* 分数显示 */
+        .score-tag {
+            float: right;
+            font-weight: bold;
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .index-link {
+            background: #f8f9fa;
+            color: #666;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <div class="card-header">
+            <div><span class="badge">🔥 热榜 #1</span> <strong>中国新闻网</strong></div>
+            <div style="color: #999; font-size: 12px;">2026-02-12 13:33</div>
+        </div>
+
+        <div class="content-box">
+            <div class="news-title">2025年全国各级行政复议机关办案数达111.5万件</div>
+
+            <details>
+                <summary style="color: var(--accent-color); cursor: pointer;">展开阅读新闻全文...</summary>
+                <p style="font-size: 14px; line-height: 1.6; color: #666;">
+                    新华社北京2月12日电... 经行政复议后，93.6%的案件未再进入诉讼或信访程序... (此处为爬虫抓取的全量内容)
+                </p>
+            </details>
+
+            <div class="summary-section">
+                <strong>💡 总结陈述：</strong><br>
+                这组数据充分体现了我国法治政府建设的显著成效，行政复议正成为化解行政争议、维护群众合法权益的“主渠道”。
+            </div>
+
+            <div style="margin-top: 15px;">
+                <strong>📍 关键要点：</strong>
+                <ul style="font-size: 14px; padding-left: 20px;">
+                    <li>实质化解率连续两年超九成，社会矛盾在基层得到有效控制。</li>
+                    <li>涉企复议案件增多，法治化营商环境得到法律制度的强力支撑。</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <strong style="display: block; margin-bottom: 10px;">📚 课本关联 (相关度 ≥ 70)</strong>
+                <div class="relation-grid">
+                    <div class="relation-item">
+                        <span class="score-tag">98% 强相关</span>
+                        <div style="font-weight: bold;">九年级上册 · 民主与法治</div>
+                        <div style="font-size: 13px; color: #777; margin-top: 5px;">核心内容：法治政府依法行政，行政复议制度对权力的制约。</div>
+                        <div class="index-link">🔖 索引：P51 - P53</div>
+                    </div>
+
+                    <div class="relation-item">
+                        <span class="score-tag">85% 相关</span>
+                        <div style="font-weight: bold;">八年级下册 · 公民权利</div>
+                        <div style="font-size: 13px; color: #777; margin-top: 5px;">核心内容：公民行使监督权及依法维权的途径。</div>
+                        <div class="index-link">🔖 索引：P38</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
